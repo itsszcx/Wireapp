@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wire — direct chat</title>
+<link rel="stylesheet" href="css/style.css" />
+<!-- Must load before js/main.js — it sets window.supabase, which
+     js/supabase-client.js relies on. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="app">
+
+  <!-- AUTH SCREEN -->
+  <div id="authScreen" class="screen active">
+    <div class="center-wrap">
+      <div class="panel">
+        <div class="wordmark">WIRE</div>
+        <h1 id="authTitle">Sign in</h1>
+
+        <label for="authEmail">Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" />
+
+        <label for="authPassword">Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" />
+
+        <label id="usernameLabel" for="authUsername" style="display:none;">Display name</label>
+        <input type="text" id="authUsername" placeholder="What should people call you?" style="display:none;" />
+
+        <button class="btn-primary" id="authSubmitBtn">Sign in</button>
+        <div class="error-text" id="authError"></div>
+
+        <div class="switch-row">
+          <span id="switchPrompt">Don't have an account?</span>
+          <button class="link-btn" id="switchModeBtn">Sign up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div id="homeScreen" class="screen">
+    <div class="home-header">
+      <div class="wordmark">WIRE</div>
+      <div style="display:flex; gap:14px; align-items:center;">
+        <button id="themeToggleBtn" title="Toggle dark mode">🌙 Dark</button>
+        <button id="editNameBtn" style="background:none; border:none; color:var(--ink-soft); font-size:13px; text-decoration:underline;">Edit name</button>
+        <button id="logoutBtn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="your-code-block">
+      <div class="your-code-label">Your code — share it so someone can find you</div>
+      <div class="your-code-value" id="yourCode">------</div>
+    </div>
+
+    <div class="start-chat-block">
+      <label for="friendCodeInput">Start a chat with a code</label>
+      <div class="start-chat-row">
+        <input type="text" id="friendCodeInput" placeholder="e.g. AB12CD" />
+        <button id="findBtn">Find</button>
+      </div>
+      <div class="error-text" id="findError"></div>
+    </div>
+
+    <div class="convo-list">
+      <div class="convo-list-label">Conversations</div>
+      <div id="convoItems"></div>
+    </div>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div id="chatScreen" class="screen">
+    <div class="chat-header">
+      <button class="back-btn" id="backBtn">←</button>
+      <div class="code" id="chatWithCode">—</div>
+    </div>
+    <div class="messages" id="messagesEl"></div>
+    <div class="composer">
+      <button id="attachBtn" title="Send a photo">📷</button>
+      <button id="disappearingToggleBtn" title="Toggle disappearing photo mode">🔥 Off</button>
+      <input type="file" id="imageInput" accept="image/*" style="display:none;" />
+      <input type="text" id="messageInput" placeholder="Type a message…" />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="lightboxOverlay" class="lightbox-overlay">
+  <img id="lightboxImg" src="" alt="Full size photo" />
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
