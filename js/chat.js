@@ -8,6 +8,8 @@ export async function openChat(conversation, otherCode) {
   const otherId = conversation.user_a_id === state.currentProfile.id ? conversation.user_b_id : conversation.user_a_id;
   state.activeConversation = { id: conversation.id, otherCode, otherId };
   state.otherLastReadAt = null;
+  oldestLoadedAt = null;
+  hasMoreOlder = false;
   document.getElementById("chatWithCode").textContent = otherCode;
   showScreen("chatScreen");
   await loadMessages();
@@ -39,24 +41,95 @@ document.getElementById("backBtn").addEventListener("click", () => {
   loadConversations();
 });
 
+// How many messages to fetch per page. Fetching newest-first (see
+// loadMessages below) guarantees the bottom of the chat is always complete,
+// even in a long conversation — older messages load on request instead.
+const MESSAGE_PAGE_SIZE = 50;
+let oldestLoadedAt = null;
+let hasMoreOlder = false;
+
 // ---------- Load messages for active conversation ----------
 async function loadMessages() {
   const { data: messages, error } = await supabase
     .from("messages")
     .select("*")
     .eq("conversation_id", state.activeConversation.id)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false })
+    .limit(MESSAGE_PAGE_SIZE);
 
   const container = document.getElementById("messagesEl");
   container.innerHTML = "";
-  if (!error && messages) {
-    for (const m of messages) renderMessage(m);
-  }
+
+  if (error || !messages) return;
+
+  // We fetched newest-first specifically so the bottom of the chat is
+  // guaranteed complete regardless of how long the conversation is — flip
+  // back to chronological order for rendering.
+  const ordered = messages.slice().reverse();
+  hasMoreOlder = messages.length === MESSAGE_PAGE_SIZE;
+  oldestLoadedAt = ordered.length ? ordered[0].created_at : null;
+
+  renderLoadEarlierButton();
+  for (const m of ordered) renderMessage(m);
   container.scrollTop = container.scrollHeight;
 }
 
-function renderMessage(m) {
+// Fetches an older page above what's currently loaded, without disturbing
+// the user's scroll position.
+async function loadOlderMessages() {
+  if (!hasMoreOlder || !oldestLoadedAt || !state.activeConversation) return;
   const container = document.getElementById("messagesEl");
+  const btn = document.getElementById("loadEarlierBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Loading…"; }
+
+  const { data: older, error } = await supabase
+    .from("messages")
+    .select("*")
+    .eq("conversation_id", state.activeConversation.id)
+    .lt("created_at", oldestLoadedAt)
+    .order("created_at", { ascending: false })
+    .limit(MESSAGE_PAGE_SIZE);
+
+  if (error || !older) {
+    if (btn) { btn.disabled = false; btn.textContent = "Load earlier messages"; }
+    return;
+  }
+
+  const ordered = older.slice().reverse();
+  hasMoreOlder = older.length === MESSAGE_PAGE_SIZE;
+  if (ordered.length) oldestLoadedAt = ordered[0].created_at;
+
+  const previousHeight = container.scrollHeight;
+  const previousScrollTop = container.scrollTop;
+
+  if (btn) btn.remove();
+
+  const fragment = document.createDocumentFragment();
+  for (const m of ordered) fragment.appendChild(buildMessageElement(m));
+  container.prepend(fragment);
+
+  renderLoadEarlierButton();
+  // Keep whatever the user was looking at in the same spot on screen.
+  container.scrollTop = previousScrollTop + (container.scrollHeight - previousHeight);
+}
+
+function renderLoadEarlierButton() {
+  const container = document.getElementById("messagesEl");
+  const existing = document.getElementById("loadEarlierBtn");
+  if (existing) existing.remove();
+  if (!hasMoreOlder) return;
+
+  const btn = document.createElement("button");
+  btn.id = "loadEarlierBtn";
+  btn.className = "load-earlier-btn";
+  btn.textContent = "Load earlier messages";
+  btn.addEventListener("click", loadOlderMessages);
+  container.prepend(btn);
+}
+
+// Builds a message bubble without appending or scrolling — used both for
+// normal (bottom) rendering and for prepending older pages above.
+function buildMessageElement(m) {
   const div = document.createElement("div");
   const mine = m.sender_id === state.currentProfile.id;
   div.className = "bubble " + (mine ? "mine" : "theirs");
@@ -83,6 +156,12 @@ function renderMessage(m) {
     }
   }
 
+  return div;
+}
+
+function renderMessage(m) {
+  const container = document.getElementById("messagesEl");
+  const div = buildMessageElement(m);
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
   renderReadReceipt();

@@ -472,3 +472,16 @@ body.dark .unsend-btn {
   font-size: 13px;
   text-decoration: underline;
 }
+
+.load-earlier-btn {
+  align-self: center;
+  margin: 4px 0 10px 0;
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.load-earlier-btn:hover { border-color: var(--accent); color: var(--accent-dark); }
+.load-earlier-btn:disabled { opacity: 0.6; }
