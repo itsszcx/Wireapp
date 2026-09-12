@@ -1,12 +1,17 @@
 :root {
   --paper: #FAF7F2;
+  --surface: #FFFFFF;
   --ink: #1F2937;
   --ink-soft: #6B7280;
   --accent: #2A7F73;
   --accent-dark: #1E5D54;
+  --accent-soft: #DCEEEA;
   --clay: #E8DFD3;
-  --line: #DDD4C6;
+  --line: #E4DACB;
   --danger: #B3441E;
+  --shadow: 0 1px 2px rgba(31, 41, 55, 0.04), 0 4px 14px rgba(31, 41, 55, 0.06);
+  --radius: 14px;
+  --radius-sm: 10px;
 }
 
 * { box-sizing: border-box; }
@@ -17,6 +22,7 @@ html, body {
   background: var(--paper);
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #app {
@@ -74,15 +80,17 @@ input[type="password"],
 input[type="text"] {
   width: 100%;
   padding: 12px 14px;
-  font-size: 15px;
+  font-size: 16px;
   border: 1px solid var(--line);
-  border-radius: 4px;
-  background: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   color: var(--ink);
   outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 button {
@@ -97,12 +105,14 @@ button {
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 15px;
   font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
 .btn-primary:hover { background: var(--accent-dark); }
-.btn-primary:disabled { background: var(--line); cursor: default; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { background: var(--line); cursor: default; transform: none; }
 
 .link-btn {
   background: none;
@@ -130,10 +140,12 @@ button {
 /* ---------- Home screen ---------- */
 .home-header {
   padding: 20px 24px;
+  padding-top: calc(20px + env(safe-area-inset-top));
   border-bottom: 1px solid var(--line);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: var(--surface);
 }
 .home-header .wordmark { margin: 0; }
 #logoutBtn {
@@ -145,10 +157,11 @@ button {
 }
 
 .your-code-block {
-  margin: 28px 24px 8px 24px;
+  margin: 24px 24px 8px 24px;
   padding: 18px 20px;
   background: var(--clay);
-  border-radius: 4px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 .your-code-label {
   font-size: 12px;
@@ -176,7 +189,7 @@ button {
   background: var(--ink);
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
 }
@@ -196,16 +209,19 @@ button {
 .convo-item {
   padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--radius);
   margin-bottom: 8px;
   cursor: pointer;
-  background: #fff;
+  background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease, transform 0.1s ease;
 }
-.convo-item:hover { border-color: var(--accent); }
+.convo-item:hover { border-color: var(--accent); transform: translateY(-1px); }
+.convo-item:active { transform: translateY(0); }
 .convo-item .code { font-weight: 600; font-size: 15px; }
 .convo-item .preview {
   font-size: 13px;
@@ -251,17 +267,20 @@ button {
 /* ---------- Chat screen ---------- */
 .chat-header {
   padding: 16px 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
   border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
   gap: 12px;
+  background: var(--surface);
 }
 .back-btn {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 22px;
   color: var(--ink);
-  padding: 0 4px;
+  padding: 6px 8px;
+  margin-left: -8px;
 }
 .chat-header .code {
   font-weight: 600;
@@ -278,23 +297,25 @@ button {
 }
 
 .bubble {
-  max-width: 72%;
+  max-width: 78%;
   padding: 10px 14px;
-  border-radius: 4px;
   font-size: 15px;
   line-height: 1.4;
   word-wrap: break-word;
+  box-shadow: var(--shadow);
 }
 .bubble.mine {
   align-self: flex-end;
   background: var(--accent);
   color: #fff;
   position: relative;
+  border-radius: 16px 16px 4px 16px;
 }
 .bubble.theirs {
   align-self: flex-start;
   background: var(--clay);
   color: var(--ink);
+  border-radius: 16px 16px 16px 4px;
 }
 .unsend-btn {
   position: absolute;
@@ -322,52 +343,84 @@ button {
 }
 
 .composer {
-  padding: 14px 20px;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   display: flex;
-  gap: 10px;
+  align-items: flex-end;
+  gap: 8px;
+  background: var(--surface);
 }
-.composer input {
+
+.composer-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+.icon-btn:hover { background: var(--paper); }
+.icon-btn:disabled { opacity: 0.5; }
+.icon-btn.active {
+  background: var(--danger);
+  color: #fff;
+}
+
+#messageInput {
   flex: 1;
+  min-width: 0;
+  resize: none;
+  max-height: 120px;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.4;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  overflow-y: auto;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.composer button {
-  padding: 0 20px;
+#messageInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.send-btn {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 4px;
-  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
-.composer button:hover { background: var(--accent-dark); }
-
-#attachBtn {
-  background: none;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  font-size: 18px;
-  padding: 0 12px;
-}
-#attachBtn:hover { border-color: var(--accent); }
-#attachBtn:disabled { opacity: 0.5; }
-
-#disappearingToggleBtn {
-  background: none;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  font-size: 13px;
-  padding: 0 10px;
-  color: var(--ink-soft);
-  white-space: nowrap;
-}
-#disappearingToggleBtn.active {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: #fff;
-}
+.send-btn:hover { background: var(--accent-dark); }
+.send-btn:active { transform: scale(0.92); }
 
 .bubble img {
   max-width: 100%;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   display: block;
 }
 
@@ -420,7 +473,7 @@ button {
 .lightbox-overlay img {
   max-width: 100%;
   max-height: 100%;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .read-receipt {
@@ -438,23 +491,16 @@ button {
    need an explicit override. */
 body.dark {
   --paper: #15181C;
+  --surface: #1D2229;
   --ink: #ECECEC;
   --ink-soft: #9CA3AF;
   --accent: #3FA394;
-  --accent-dark: #2A7F73;
+  --accent-dark: #59C4B3;
+  --accent-soft: #1F3B37;
   --clay: #262B31;
   --line: #33383E;
   --danger: #E0704A;
-}
-
-body.dark input[type="email"],
-body.dark input[type="password"],
-body.dark input[type="text"] {
-  background: #1E2227;
-}
-
-body.dark .convo-item {
-  background: #1B1F24;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* These two intentionally use --ink as a solid button background in light
@@ -485,3 +531,40 @@ body.dark .unsend-btn {
 }
 .load-earlier-btn:hover { border-color: var(--accent); color: var(--accent-dark); }
 .load-earlier-btn:disabled { opacity: 0.6; }
+
+/* ---------- Larger screens ---------- */
+/* Phones (below this breakpoint) are untouched. On laptops/desktops, a
+   generously wide single column reads much better than either a
+   phone-shaped mockup or full edge-to-edge stretching. */
+@media (min-width: 640px) {
+  body {
+    background: var(--paper);
+  }
+  #app {
+    max-width: 720px;
+    margin: 0 auto;
+    height: 100vh;
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .home-header,
+  .chat-header,
+  .composer {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .your-code-block,
+  .start-chat-block {
+    margin-left: 32px;
+    margin-right: 32px;
+  }
+  .convo-list {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .messages {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .bubble { max-width: 60%; }
+}

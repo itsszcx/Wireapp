@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Wire — direct chat</title>
 <link rel="stylesheet" href="css/style.css" />
 <!-- Must load before js/main.js — it sets window.supabase, which
@@ -78,11 +78,13 @@
     </div>
     <div class="messages" id="messagesEl"></div>
     <div class="composer">
-      <button id="attachBtn" title="Send a photo">📷</button>
-      <button id="disappearingToggleBtn" title="Toggle disappearing photo mode">🔥 Off</button>
+      <div class="composer-actions">
+        <button id="attachBtn" class="icon-btn" title="Send a photo">📷</button>
+        <button id="disappearingToggleBtn" class="icon-btn" title="Toggle disappearing photo mode">🔥</button>
+      </div>
       <input type="file" id="imageInput" accept="image/*" style="display:none;" />
-      <input type="text" id="messageInput" placeholder="Type a message…" />
-      <button id="sendBtn">Send</button>
+      <textarea id="messageInput" placeholder="Type a message…" rows="1"></textarea>
+      <button id="sendBtn" class="send-btn" title="Send">➤</button>
     </div>
   </div>
 

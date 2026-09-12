@@ -437,11 +437,20 @@ function subscribeToMessages() {
 }
 
 // ---------- Send message ----------
+const messageInput = document.getElementById("messageInput");
+
+function resizeMessageInput() {
+  messageInput.style.height = "auto";
+  messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + "px";
+}
+messageInput.addEventListener("input", resizeMessageInput);
+
 async function sendMessage() {
-  const input = document.getElementById("messageInput");
-  const content = input.value.trim();
+  const content = messageInput.value.trim();
   if (!content || !state.activeConversation) return;
-  input.value = "";
+  messageInput.value = "";
+  resizeMessageInput();
+  messageInput.focus();
 
   const { error } = await supabase.from("messages").insert({
     conversation_id: state.activeConversation.id,
@@ -454,8 +463,11 @@ async function sendMessage() {
 }
 
 document.getElementById("sendBtn").addEventListener("click", sendMessage);
-document.getElementById("messageInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
+messageInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
 });
 
 // ---------- Send a photo ----------
@@ -465,8 +477,10 @@ const disappearingToggleBtn = document.getElementById("disappearingToggleBtn");
 
 disappearingToggleBtn.addEventListener("click", () => {
   state.sendDisappearing = !state.sendDisappearing;
-  disappearingToggleBtn.textContent = state.sendDisappearing ? "🔥 On" : "🔥 Off";
   disappearingToggleBtn.classList.toggle("active", state.sendDisappearing);
+  disappearingToggleBtn.title = state.sendDisappearing
+    ? "Disappearing photo mode: ON (tap to turn off)"
+    : "Disappearing photo mode: off (tap to turn on)";
 });
 
 attachBtn.addEventListener("click", () => {
